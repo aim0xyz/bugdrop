@@ -1,0 +1,11 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const { execFileSync } = require('node:child_process');
+const root = path.resolve(__dirname, '..');
+execFileSync(process.execPath, [path.join(__dirname, 'check.cjs')], {stdio:'inherit'});
+const dest = path.join(root, 'dist'); fs.mkdirSync(dest, {recursive:true});
+const output = path.join(dest, 'bugdrop-0.1.0.zip');
+fs.rmSync(output, {force:true});
+execFileSync('zip', ['-qr', output, '.', '-x', '*.DS_Store'], {cwd:path.join(root, 'extension')});
+execFileSync('zip', ['-qj', output, path.join(root, 'LICENSE')]);
+console.log(output);

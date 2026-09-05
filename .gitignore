@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+test-results/
+*.log
+
+bugdrop-*/
+BugDrop Captures/
+
+# Local desktop screenshot includes a personal capture path.
+docs/desktop-preview.png

@@ -1,0 +1,21 @@
+{
+  "name": "bugdrop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first bug reports for web apps, iOS simulators and Android emulators.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "demo": "node demo/server.cjs",
+    "check": "node scripts/check.cjs",
+    "package": "node scripts/package.cjs",
+    "mobile": "node bin/bugdrop.cjs",
+    "desktop": "node desktop/server.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "bugdrop": "bin/bugdrop.cjs"
+  }
+}
