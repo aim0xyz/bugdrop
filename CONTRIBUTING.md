@@ -22,7 +22,7 @@ npx playwright install chromium
 node tests/e2e.cjs
 ```
 
-The test starts a local demo server on port 4174, loads the extension into a disposable profile, and verifies capture, privacy omissions, failed requests, error capture, screenshots, stopping, report editing, downloads, navigation and deletion. Outputs go to ignored `test-results/`. It does not use your normal browser profile or accounts.
+The test starts a local demo server on port 4174, loads the extension into a disposable profile, and verifies capture, privacy omissions, failed requests, virtual-DOM-style rerenders, SPA routes, automatic and multiple screenshots, privacy masking, same-origin reload continuation, stopping, report editing, downloads, and deletion. Outputs go to ignored `test-results/`. It does not use your normal browser profile or accounts.
 
 ## Architecture
 

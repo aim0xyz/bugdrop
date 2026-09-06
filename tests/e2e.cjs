@@ -26,7 +26,7 @@ const output = path.join(root, 'test-results'); fs.mkdirSync(output, {recursive:
   let popup;
   for(let i=0;i<30;i++){popup=context.pages().find(p=>p.url().endsWith('/popup.html'));if(popup)break;await new Promise(r=>setTimeout(r,100));}
   if(!popup) { console.log('Action granted; opening popup document for automation.'); popup=await context.newPage(); await popup.goto(`chrome-extension://${id}/popup.html`); await page.bringToFront(); }
-  await popup.locator('#start').click();
+  await popup.locator('#auto-errors').check();await popup.locator('#auto-network').check();await popup.locator('#start').click();
   await popup.locator('#stop').waitFor({state:'visible',timeout:10000});
   await page.bringToFront();
   await page.locator('#email').fill('sensitive-person@example.com');
@@ -39,15 +39,18 @@ const output = path.join(root, 'test-results'); fs.mkdirSync(output, {recursive:
    const response = await control.evaluate(async args=>await chrome.runtime.sendMessage(args),{type,...data});
    assert.equal(response.ok,true,response.error);return response.data;
   };
+  await page.bringToFront();await command('MASK_MODE');await page.locator('.notebook').click({position:{x:20,y:20}});assert.equal(await page.locator('[data-bugdrop-mask]').count(),1);await page.keyboard.press('Escape');
   let captured;
   for(let i=0;i<40;i++){captured=await command('GET');if(captured.events.some(e=>e.kind==='navigation'))break;await new Promise(r=>setTimeout(r,100));}
   assert.ok(captured.recording,'SPA navigation must retain capture');
   assert.ok(captured.events.some(e=>e.kind==='network'&&e.status===503),'fetch failure');
   assert.ok(captured.events.some(e=>e.kind==='network'&&e.status===401),'XHR failure');
   assert.ok(captured.events.some(e=>e.kind==='error'&&e.message.includes('Cart total')),'runtime error');
+  assert.ok(captured.events.some(e=>e.kind==='click'&&e.selector&&e.role),'delegated interaction survives virtual-DOM-style replacement');
+  assert.ok(captured.screenshots.length>=1,'automatic error screenshot');
   const raw=JSON.stringify(captured);
   for(const secret of ['sensitive-person@example.com','password-never-store-789','demo-secret-value','private@example.com','demo-private-query'])assert.ok(!raw.includes(secret),'Leaked '+secret);
-  await page.bringToFront(); await command('SCREENSHOT');
+  await page.bringToFront(); await command('SCREENSHOT');await command('SCREENSHOT');
   await command('STOP');
   const count=(await command('GET')).events.length;
   await page.locator('#checkout').click();
@@ -71,17 +74,19 @@ const output = path.join(root, 'test-results'); fs.mkdirSync(output, {recursive:
   await control.locator('#copy').click();
   await control.locator('#toast').filter({hasText:'Copied. Paste into your coding agent.'}).waitFor();
   const downloadPromise=control.waitForEvent('download');await control.locator('#json').click();const download=await downloadPromise;await download.saveAs(path.join(output,'report.json'));
-  const portable=JSON.parse(fs.readFileSync(path.join(output,'report.json'),'utf8'));assert.equal(portable.schemaVersion,1);assert.ok(!('tabId'in portable));assert.ok(portable.screenshot.startsWith('data:image/jpeg'));
+  const portable=JSON.parse(fs.readFileSync(path.join(output,'report.json'),'utf8'));assert.equal(portable.schemaVersion,2);assert.ok(!('tabId'in portable));assert.ok(portable.screenshots.length>=3);assert.ok(portable.screenshots.every(s=>s.data.startsWith('data:image/jpeg')));
   const mdPromise=control.waitForEvent('download');await control.locator('#markdown').click();await(await mdPromise).saveAs(path.join(output,'report.md'));assert.ok(fs.readFileSync(path.join(output,'report.md'),'utf8').includes('HTTP 503'));
-  await control.locator('#remove-image').click();assert.equal((await command('GET')).screenshot,null);assert.ok(await control.locator('#copy').isDisabled());
-  // Restart through action grant, then ensure a full reload ends capture.
+  await control.locator('.image-card .danger').first().click();assert.equal((await command('GET')).screenshots.length,portable.screenshots.length-1);assert.ok(await control.locator('#copy').isDisabled());
+  // Restart through action grant, then ensure same-site reload continues capture.
   const current=await command('GET');await command('DELETE',{id:current.id});
   await page.bringToFront();await session.send('Extensions.triggerAction',{id,targetId:targetInfo.targetId});
   const tabs=await control.evaluate(()=>chrome.tabs.query({}));const tab=tabs.find(t=>t.url?.startsWith('http://127.0.0.1:4174'));
   await command('START',{tabId:tab.id});await page.reload();
-  for(let i=0;i<30;i++){captured=await command('GET');if(!captured.recording)break;await new Promise(r=>setTimeout(r,100));}
-  assert.equal(captured.recording,false);assert.ok(captured.stopReason.includes('navigated'));
+  for(let i=0;i<50;i++){captured=await command('GET');if(captured.events.some(e=>e.message.includes('reloaded')))break;await new Promise(r=>setTimeout(r,100));}
+  assert.equal(captured.recording,true);assert.ok(captured.events.some(e=>e.message.includes('reloaded')));
+  await page.goto('http://localhost:4174/');for(let i=0;i<50;i++){captured=await command('GET');if(!captured.recording)break;await new Promise(r=>setTimeout(r,100));}
+  assert.equal(captured.recording,false);assert.ok(captured.stopReason.includes('left the recorded site'));
   await command('DELETE',{id:captured.id});assert.equal(await command('GET'),null);
-  console.log('PASS: real activeTab grant, capture, fetch/XHR/errors, input omission, redaction, SPA route, screenshot, stop, review, removal, JSON/Markdown, full navigation, deletion.');
+  console.log('PASS: activeTab grant, virtual-DOM-style rerender, SPA route, automatic and multiple screenshots, same-site reload continuation, cross-origin stop, review, export, removal, and deletion.');
  } finally { await context?.close();server.kill();fs.rmSync(profile,{recursive:true,force:true}); }
 })().catch(error=>{console.error(error);process.exitCode=1});

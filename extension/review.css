@@ -1,0 +1,6 @@
+.image-gallery { display: grid; gap: 18px; }
+.image-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.image-card .screenshot { margin: 0 0 10px; }
+.image-card footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; }
+.image-card footer div { display: grid; gap: 3px; }
+.image-card footer button { padding: 7px 10px; }

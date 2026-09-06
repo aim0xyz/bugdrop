@@ -1,0 +1,11 @@
+.capture-options {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 12px 13px;
+  margin: 16px 0;
+}
+.capture-options strong { display: block; font-size: 12px; margin-bottom: 8px; }
+.capture-options label { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; line-height: 1.45; margin: 7px 0; }
+.capture-options input { margin: 2px 0 0; accent-color: var(--accent); }
+.capture-options p { font-size: 10px; line-height: 1.45 !important; color: var(--muted); margin: 8px 0 0; }

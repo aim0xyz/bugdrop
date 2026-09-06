@@ -6,4 +6,6 @@ document.querySelector('#xhr').onclick=()=>{const xhr=new XMLHttpRequest();xhr.o
 document.querySelector('#runtime').onclick=()=>{throw new Error('Cart total is undefined')};
 document.querySelector('#route').onclick=()=>history.pushState({},'','/?coupon=private#checkout');
 document.querySelector('#secret').onclick=()=>console.warn('token=demo-secret-value customer=private@example.com');
+// Replacing controls mimics the DOM churn used by React, Vue, Angular and similar SPA renderers.
+setTimeout(()=>{const old=document.querySelector('#xhr');const next=old.cloneNode(true);old.replaceWith(next);next.onclick=()=>{const xhr=new XMLHttpRequest();xhr.open('GET','/api/profile?email=private@example.com');xhr.send()};},50);
 </script></html>

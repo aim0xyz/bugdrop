@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BugDrop — Show the bug",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Record a bug, review the evidence, and give your coding agent the context. Local, no account.",
   "minimum_chrome_version": "120",
   "permissions": ["activeTab", "scripting", "storage"],
