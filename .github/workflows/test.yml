@@ -17,4 +17,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: bugdrop-extension
-          path: dist/bugdrop-0.1.0.zip
+          path: dist/bugdrop-*.zip

@@ -8,7 +8,7 @@ No account. No cloud service. No AI API key. MIT licensed.
 
 ![BugDrop review screen with a real capture from the local demo](docs/preview.png)
 
-> **Early prototype · v0.2.0.** Load it unpacked in Chrome. There is no Chrome Web Store listing yet. BugDrop captures debugging evidence; it does not automatically fix bugs or generate regression tests.
+> **Early prototype · v0.2.1.** Load it unpacked in Chrome. There is no Chrome Web Store listing yet. BugDrop captures debugging evidence; it does not automatically fix bugs or generate regression tests.
 
 ## Desktop recorder — start here for mobile apps
 
@@ -60,7 +60,7 @@ Native capture collects process-scoped logs and optional media, not automatic to
 7. Click **Stop & review**. Add expected and actual behavior, remove any private evidence, and confirm review.
 8. **Copy for coding agent**, **Download Markdown**, or **Download JSON**.
 
-No build or dependency installation is needed to load the extension. Only one capture is retained at a time; delete it from the review page before starting another.
+No build or dependency installation is needed to load the extension. Only one capture is retained at a time. After finishing one, use **Delete report & start over** in the popup (or delete it from the review page) before starting another.
 
 ### A deliberately broken playground
 
@@ -122,7 +122,7 @@ npm run check
 npm run package
 ```
 
-Runtime and unit tests have no third-party dependencies. Packaging uses `zip` (macOS/Linux) and writes `dist/bugdrop-0.2.0.zip`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the real-browser test and architecture.
+Runtime and unit tests have no third-party dependencies. Packaging uses `zip` (macOS/Linux) and writes `dist/bugdrop-0.2.1.zip`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the real-browser test and architecture.
 
 ## Next, driven by actual bug reports
 

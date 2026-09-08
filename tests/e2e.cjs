@@ -55,6 +55,18 @@ const output = path.join(root, 'test-results'); fs.mkdirSync(output, {recursive:
   const count=(await command('GET')).events.length;
   await page.locator('#checkout').click();
   assert.equal((await command('GET')).events.length,count,'stop must detach capture');
+  // A completed report must not trap the popup in a review-only state.
+  await popup.reload();
+  await popup.locator('#review').waitFor({state:'visible'});
+  assert.ok(await popup.locator('#start').isHidden());
+  popup.once('dialog',dialog=>dialog.accept());
+  await popup.locator('#new-report').click();
+  await popup.locator('#start').waitFor({state:'visible'});
+  assert.equal(await command('GET'),null,'popup can discard a completed report and return to capture setup');
+  const tabsAfterReset=await control.evaluate(()=>chrome.tabs.query({}));const recordedTab=tabsAfterReset.find(t=>t.url?.startsWith('http://127.0.0.1:4174'));
+  await page.bringToFront();await command('START',{tabId:recordedTab.id});await page.locator('#checkout').click();
+  for(let i=0;i<30;i++){if((await command('GET')).events.length)break;await new Promise(r=>setTimeout(r,100));}
+  await command('SCREENSHOT');await command('SCREENSHOT');await command('SCREENSHOT');await command('STOP');
   await control.reload();
   await control.locator('#report').waitFor({state:'visible'});
   assert.ok(await control.locator('#copy').isDisabled(),'review gate');
