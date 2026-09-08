@@ -30,6 +30,7 @@ The test starts a local demo server on port 4174, loads the extension into a dis
 - `extension/content.js`: isolated-world input/click capture and sanitized bridge from the main page.
 - `extension/recorder.js`: temporary main-world console/fetch/XHR/history hooks with cleanup.
 - `extension/core.js`: event allowlist, heuristic masking, portable JSON schema, Markdown formatter.
+- `extension/integrations.js`: provider-neutral handoff contract and pure provider payload formatters.
 - `extension/popup.*`: explicit recording controls.
 - `extension/review.*`: local review, removal, context editing, and exports.
 

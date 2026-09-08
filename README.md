@@ -133,4 +133,8 @@ Runtime and unit tests have no third-party dependencies. Packaging uses `zip` (m
 
 Contributions should solve observed problems. A reproducible bug report is more useful than an artificial metric. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Integrations
+
+BugDrop Core remains local-first. The integration contract and Jira ADF formatter are documented in [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md); authentication, uploads, and paid entitlements belong to a separately operated service and are never implicit in a capture.
+
 [MIT License](LICENSE)
