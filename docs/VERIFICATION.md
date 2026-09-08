@@ -1,11 +1,11 @@
-# Verification — 2026-09-06
+# Verification — 2026-09-08
 
 Scope: current local source, macOS, bundled Playwright/Chromium, iOS 26.5 simulator and Android API 36 emulator. Native tests use the synthetic BugDrop demo apps, not production/customer apps.
 
 ## Passed
 
-- 12 Node unit tests; JavaScript syntax and manifest asset checks.
-- Chrome extension with production permissions: actual activeTab grant, delegated interactions after virtual-DOM-style replacement, structural selectors and roles, input omission, console/runtime errors, unsuccessful fetch/XHR, SPA navigation, privacy masking, automatic and multiple screenshots, same-origin reload continuation, stop, event and image removal, clipboard, schema-v2 JSON/Markdown downloads, and deletion.
+- 18 Node unit tests; JavaScript syntax and manifest asset checks.
+- Chrome extension with production permissions: actual activeTab grant, delegated interactions after virtual-DOM-style replacement, stable test selectors with structural fallbacks and roles, input omission, redacted error stack traces, millisecond-relative timing, unsuccessful fetch/XHR, SPA navigation, privacy masking, automatic and multiple screenshots, same-origin reload continuation, stop, event and image removal, clipboard, schema-v2 JSON/Markdown downloads, and deletion.
 - Desktop iOS and Android: device/app selection, scoped app logs, synthetic secret masking, screenshot, video metadata/playback readiness, stop, reviewed JSON and Markdown downloads.
 - Editing a mobile report resets export consent; evidence can be deselected.
 - Two successive captures receive distinct URLs; the previous report remains reachable within the controller session.

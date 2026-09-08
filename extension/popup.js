@@ -13,6 +13,7 @@ async function refresh() {
   $('capture-options').hidden = !!report;
   $('review').hidden = !report || report.recording;
   $('new-report').hidden = !report || report.recording;
+  if (!report || report.recording) $('delete-confirm').hidden = true;
   $('state').textContent = report?.recording ? '● RECORDING · ' + report.events.length + ' EVENTS' : report ? 'REPORT READY' : 'READY WHEN YOU ARE';
   $('state').classList.toggle('recording', !!report?.recording);
   $('description').textContent = report?.recording ? `Reproduce the bug in the recorded tab. ${report.screenshots?.length || 0} of ${BugDropCore.MAX_SCREENSHOTS} screenshots saved.` : report ? 'Review your capture, export the evidence, or delete it to start a new recording.' : 'Capture the steps, errors, and failed requests your coding agent needs to investigate.';
@@ -28,10 +29,11 @@ const openReview = () => chrome.tabs.create({ url: chrome.runtime.getURL('review
 action('start', async () => { const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }); await command('START', { tabId: tab.id, autoCapture: { errors: $('auto-errors').checked, network: $('auto-network').checked } }); });
 action('stop', async () => { await command('STOP'); await openReview(); window.close(); });
 action('review', openReview);
-action('new-report', async () => {
+action('new-report', async () => { $('delete-confirm').hidden = false; });
+action('cancel-delete', async () => { $('delete-confirm').hidden = true; });
+action('confirm-delete', async () => {
   const report = await command('GET');
-  if (!report || report.recording) return;
-  if (!confirm('Delete the last report and all of its screenshots from this browser?')) return;
+  if (!report || report.recording) { $('delete-confirm').hidden = true; return; }
   await command('DELETE', { id: report.id });
 });
 action('screenshot', async () => { $('shot-consent').hidden = false; });

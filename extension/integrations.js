@@ -24,15 +24,7 @@
   });
 
   function timelineLine(event) {
-    return [
-      `[+${((event.ms || 0) / 1000).toFixed(1)}s]`,
-      String(event.kind || 'event').toUpperCase() + ':',
-      event.message || '',
-      event.url ? '| ' + event.url : '',
-      event.kind === 'network' ? `| ${event.method || 'OTHER'} ${event.status || 'failed'}` : '',
-      event.role ? '| role ' + event.role : '',
-      event.selector ? '| selector ' + event.selector : ''
-    ].filter(Boolean).join(' ');
+    return Core.timelineLine(event);
   }
 
   function jiraDescription(report) {

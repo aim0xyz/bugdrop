@@ -7,6 +7,14 @@ function installPageRecorder(channel) {
   const primitive = value => typeof value === 'string' ? value.slice(0, 2000)
     : value === null ? 'null' : ['number', 'boolean', 'undefined'].includes(typeof value) ? String(value)
     : '[object omitted]';
+  const errorDetails = value => {
+    if (!(value instanceof Error)) return null;
+    let name = 'Error', message = '', stack = '';
+    try { name = String(value.name || 'Error'); } catch {}
+    try { message = String(value.message || ''); } catch {}
+    try { stack = typeof value.stack === 'string' ? value.stack.slice(0, 12000) : ''; } catch {}
+    return { text: name + (message ? ': ' + message : ''), stack };
+  };
   const emit = event => {
     if (!active) return;
     try { originalDispatch(new EventClass(channel, { detail: JSON.stringify(event) })); } catch {}
@@ -19,12 +27,25 @@ function installPageRecorder(channel) {
   }
   for (const level of ['log', 'info', 'warn', 'error']) {
     patch(console, level, original => function (...args) {
-      emit({ kind: 'console', message: level.toUpperCase() + ': ' + args.slice(0, 6).map(primitive).join(' ') });
+      const values = args.slice(0, 6);
+      const details = values.map(errorDetails);
+      const errors = details.filter(Boolean);
+      emit({
+        kind: 'console',
+        message: level.toUpperCase() + ': ' + values.map((value, index) => details[index]?.text || primitive(value)).join(' '),
+        ...(errors.length ? { stack: errors.map(error => error.stack).filter(Boolean).join('\nCaused by:\n').slice(0, 12000) } : {})
+      });
       return Reflect.apply(original, this, args);
     });
   }
-  const onError = e => emit({ kind: 'error', message: e.message || 'Script/resource error', url: e.filename });
-  const onRejection = e => emit({ kind: 'error', message: 'Unhandled rejection: ' + (e.reason instanceof Error ? e.reason.message : primitive(e.reason)) });
+  const onError = e => {
+    const error = errorDetails(e.error);
+    emit({ kind: 'error', message: e.message || error?.text || 'Script/resource error', url: e.filename, ...(error?.stack ? { stack: error.stack } : {}) });
+  };
+  const onRejection = e => {
+    const error = errorDetails(e.reason);
+    emit({ kind: 'error', message: 'Unhandled rejection: ' + (error?.text || primitive(e.reason)), ...(error?.stack ? { stack: error.stack } : {}) });
+  };
   window.addEventListener('error', onError);
   window.addEventListener('unhandledrejection', onRejection);
   restorers.push(() => window.removeEventListener('error', onError), () => window.removeEventListener('unhandledrejection', onRejection));

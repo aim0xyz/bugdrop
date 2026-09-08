@@ -8,7 +8,7 @@ No account. No cloud service. No AI API key. MIT licensed.
 
 ![BugDrop review screen with a real capture from the local demo](docs/preview.png)
 
-> **Early prototype · v0.2.1.** Load it unpacked in Chrome. There is no Chrome Web Store listing yet. BugDrop captures debugging evidence; it does not automatically fix bugs or generate regression tests.
+> **Early prototype · v0.2.2.** Load it unpacked in Chrome. There is no Chrome Web Store listing yet. BugDrop captures debugging evidence; it does not automatically fix bugs or generate regression tests.
 
 ## Desktop recorder — start here for mobile apps
 
@@ -74,11 +74,11 @@ Open `http://127.0.0.1:4173`, start BugDrop, and click **Continue to checkout**.
 
 ## What you get
 
-- Clicks on interactive elements with framework-independent roles and structural selectors, plus form-change markers without input values.
-- Console log/info/warn/error strings. Objects are omitted instead of serialized.
-- Uncaught errors and unhandled promise rejections.
+- Clicks on interactive elements with framework-independent roles and stable `data-testid`, `data-test`, or `data-cy` selectors when available, plus structural fallbacks and form-change markers without input values.
+- Console log/info/warn/error strings. Error objects include bounded, redacted stack traces; other objects are omitted instead of serialized.
+- Uncaught errors and unhandled promise rejections with stack traces when the browser provides them.
 - Unsuccessful `fetch` and XHR requests: URL without query/fragment, method, status.
-- SPA route changes, same-origin reloads and navigation, relative event timing, viewport, and browser information.
+- SPA route changes, same-origin reloads and navigation, millisecond-relative event timing, viewport, and browser information.
 - Up to eight screenshots of the visible page. Screenshots can be manual or opt-in after runtime errors and failed requests.
 - An interactive privacy mask for hiding selected page areas before manual or automatic screenshots.
 - Editable context, removable events, and a portable JSON report.
@@ -122,7 +122,7 @@ npm run check
 npm run package
 ```
 
-Runtime and unit tests have no third-party dependencies. Packaging uses `zip` (macOS/Linux) and writes `dist/bugdrop-0.2.1.zip`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the real-browser test and architecture.
+Runtime and unit tests have no third-party dependencies. Packaging uses `zip` (macOS/Linux) and writes `dist/bugdrop-0.2.2.zip`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the real-browser test and architecture.
 
 ## Next, driven by actual bug reports
 

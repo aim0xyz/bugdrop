@@ -24,7 +24,7 @@ test('Jira issue payload uses ADF and keeps captured text in text nodes', () => 
   assert.equal(issue.fields.description.version, 1);
   assert.deepEqual(issue.fields.labels, ['bugdrop', 'qa']);
   const serialized = JSON.stringify(issue);
-  assert.ok(serialized.includes('POST 503'));
+  assert.ok(serialized.includes('POST https://example.com/api/checkout → 503'));
   assert.ok(!serialized.includes('token=private'));
 });
 

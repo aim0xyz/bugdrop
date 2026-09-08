@@ -12,6 +12,10 @@ function installContentRecorder(channel) {
   };
   const roleOf = el => el.getAttribute('role') || ({BUTTON:'button',A:'link',INPUT:'input',SELECT:'select',TEXTAREA:'textbox'}[el.tagName] || '');
   const selectorOf = el => {
+    for (const attribute of ['data-testid', 'data-test', 'data-cy']) {
+      const value = el.getAttribute(attribute);
+      if (value && /^[a-zA-Z][a-zA-Z0-9_-]{0,79}$/.test(value)) return `[${attribute}="${value}"]`;
+    }
     const parts = [];
     for (let node = el; node instanceof Element && node !== document.documentElement && parts.length < 5; node = node.parentElement) {
       let part = node.tagName.toLowerCase();

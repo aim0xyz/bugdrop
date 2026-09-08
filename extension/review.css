@@ -4,3 +4,4 @@
 .image-card footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; }
 .image-card footer div { display: grid; gap: 3px; }
 .image-card footer button { padding: 7px 10px; }
+.event-stack { margin: 9px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }

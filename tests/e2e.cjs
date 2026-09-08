@@ -59,8 +59,9 @@ const output = path.join(root, 'test-results'); fs.mkdirSync(output, {recursive:
   await popup.reload();
   await popup.locator('#review').waitFor({state:'visible'});
   assert.ok(await popup.locator('#start').isHidden());
-  popup.once('dialog',dialog=>dialog.accept());
   await popup.locator('#new-report').click();
+  await popup.locator('#delete-confirm').waitFor({state:'visible'});
+  await popup.locator('#confirm-delete').click();
   await popup.locator('#start').waitFor({state:'visible'});
   assert.equal(await command('GET'),null,'popup can discard a completed report and return to capture setup');
   const tabsAfterReset=await control.evaluate(()=>chrome.tabs.query({}));const recordedTab=tabsAfterReset.find(t=>t.url?.startsWith('http://127.0.0.1:4174'));

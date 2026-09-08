@@ -20,11 +20,12 @@ function render() {
   $('timeline').replaceChildren();
   for (const event of report.events) {
     const li = document.createElement('li'); li.className = 'event';
-    const time = document.createElement('span'); time.className = 'time'; time.textContent = '+' + (event.ms / 1000).toFixed(1) + 's';
+    const time = document.createElement('span'); time.className = 'time'; time.textContent = BugDropCore.formatOffset(event.ms);
     const content = document.createElement('div');
     const kind = document.createElement('div'); kind.className = 'kind ' + event.kind; kind.textContent = event.kind;
     const message = document.createElement('p'); message.className = 'event-message'; message.textContent = event.message;
     content.append(kind, message);
+    if (event.stack) { const stack = document.createElement('pre'); stack.className = 'event-stack mono'; stack.textContent = event.stack; content.append(stack); }
     if (event.url) { const url = document.createElement('p'); url.className = 'event-url mono'; url.textContent = (event.method ? event.method + ' ' + (event.status || 'FAILED') + ' · ' : '') + event.url; content.append(url); }
     if (event.selector || event.role) { const target = document.createElement('p'); target.className = 'event-url mono'; target.textContent = [event.role && 'role: ' + event.role, event.selector && 'selector: ' + event.selector].filter(Boolean).join(' · '); content.append(target); }
     const remove = document.createElement('button'); remove.className = 'remove'; remove.textContent = '×'; remove.setAttribute('aria-label', 'Remove event ' + event.id);

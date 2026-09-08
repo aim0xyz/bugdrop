@@ -17,6 +17,16 @@ test('rejects event types, ignores extra fields, and bounds text and status', ()
   assert.equal(e.ms, 400); assert.equal(e.message.length, 1600); assert.equal(e.status,0); assert.equal(e.method,'OTHER');
   assert.equal(e.body, undefined); assert.equal(e.headers, undefined);
 });
+test('keeps redacted bounded stack traces and formats a millisecond timeline', () => {
+  const click = C.normalizeEvent({kind:'click',message:'Clicked button',selector:'[data-testid="save"]'},1,1000,1000);
+  const request = C.normalizeEvent({kind:'network',message:'Fetch returned an unsuccessful response',url:'https://example.com/api/item?token=private',method:'POST',status:500},2,1000,1120);
+  const error = C.normalizeEvent({kind:'error',message:'Save failed',stack:'Error: Save failed\n    at save (https://example.com/app.js?token=private:10:2)\n    token=secret'},3,1000,1121);
+  assert.equal(C.timelineLine(click), '[+0ms] CLICK: Clicked button | selector [data-testid="save"]');
+  assert.equal(C.timelineLine(request), '[+120ms] POST https://example.com/api/item → 500 — Fetch returned an unsuccessful response');
+  assert.match(C.timelineLine(error), /^\[\+121ms\] ERROR: Save failed\nError: Save failed/);
+  assert.ok(!error.stack.includes('private'));
+  assert.ok(!error.stack.includes('secret'));
+});
 test('portable report omits internal routing identifiers and omitted events', () => {
   const report = {id:'internal', channel:'private', tabId:12, documentId:'internal', events:[], environment:{}, url:'https://example.com'};
   const json = JSON.stringify(C.portable(report));

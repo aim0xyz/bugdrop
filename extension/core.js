@@ -33,6 +33,7 @@
       id: String(index), kind: event.kind,
       ms: Math.max(0, now - startedAt),
       message: redact(event.message, 1600),
+      ...(event.stack ? { stack: redact(event.stack, 8000) } : {}),
       ...(event.url ? { url: safeUrl(event.url) } : {}),
       ...(event.selector ? { selector: redact(event.selector, 400) } : {}),
       ...(event.role ? { role: redact(event.role, 80) } : {}),
@@ -42,11 +43,21 @@
       } : {})
     };
   }
+  function formatOffset(ms) {
+    return `+${Math.max(0, Math.round(Number(ms) || 0))}ms`;
+  }
+  function timelineLine(event) {
+    const target = [event.role && `role ${event.role}`, event.selector && `selector ${event.selector}`].filter(Boolean).join(' | ');
+    const detail = event.kind === 'network'
+      ? `${event.method || 'OTHER'} ${event.url || ''} → ${event.status || 'failed'}${event.message ? ' — ' + event.message : ''}`
+      : `${String(event.kind || 'event').toUpperCase()}: ${event.message || ''}${event.url ? ' | ' + event.url : ''}${target ? ' | ' + target : ''}`;
+    return `[${formatOffset(event.ms)}] ${detail}${event.stack ? '\n' + event.stack : ''}`;
+  }
   const quoted = value => String(value || '').replace(/\r/g, '').split('\n').map(line => '> ' + line).join('\n');
   function portable(report) {
     const screenshots = Array.isArray(report.screenshots) ? report.screenshots : report.screenshot ? [{ id: 'legacy', data: report.screenshot, reason: 'Manual screenshot', ms: 0 }] : [];
     return {
-      schemaVersion: 2, generator: 'BugDrop 0.2.1', source: report.source || 'browser',
+      schemaVersion: 2, generator: 'BugDrop 0.2.2', source: report.source || 'browser',
       title: report.title || 'Untitled bug', url: report.url,
       startedAt: report.startedAt, endedAt: report.endedAt,
       stopReason: report.stopReason || '',
@@ -68,7 +79,7 @@
       '', '## Actual behavior', quoted(r.actual || 'Not provided — inspect the evidence and ask the reporter.'),
       '', '## Environment', quoted(JSON.stringify(r.environment)),
       '', '## Captured timeline',
-      ...r.events.map(e => quoted(`[+${(e.ms / 1000).toFixed(1)}s] ${e.kind.toUpperCase()}: ${e.message}${e.url ? ' | ' + e.url : ''}${e.kind === 'network' ? ' | ' + e.method + ' ' + (e.status || 'failed') : ''}${e.role ? ' | role ' + e.role : ''}${e.selector ? ' | selector ' + e.selector : ''}`)),
+      ...r.events.map(e => quoted(timelineLine(e))),
       ...(r.events.length ? [] : ['No events retained.']),
       '', '## Capture notes', quoted(r.stopReason),
       `Events omitted at capture limit: ${r.droppedEvents}.`,
@@ -77,7 +88,7 @@
       r.limitations, ''
     ].join('\n');
   }
-  const api = { MAX_EVENTS, MAX_SCREENSHOTS, redact, safeUrl, normalizeEvent, portable, markdown };
+  const api = { MAX_EVENTS, MAX_SCREENSHOTS, redact, safeUrl, normalizeEvent, formatOffset, timelineLine, portable, markdown };
   root.BugDropCore = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(globalThis);

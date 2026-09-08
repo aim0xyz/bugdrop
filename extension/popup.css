@@ -9,3 +9,12 @@
 .capture-options label { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; line-height: 1.45; margin: 7px 0; }
 .capture-options input { margin: 2px 0 0; accent-color: var(--accent); }
 .capture-options p { font-size: 10px; line-height: 1.45 !important; color: var(--muted); margin: 8px 0 0; }
+.confirm-panel {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 12px 13px;
+  margin: -6px 0 15px;
+}
+.confirm-panel p { margin: 0 0 10px; }
+.confirm-panel button { margin-right: 6px; }
